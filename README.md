@@ -168,6 +168,7 @@ Para o segundo teste as mesmas etapas são verificadas mas com as dimensões con
 
 Você deve obter esse resultado ao final de todos os testes. 
 
+![alt text](https://github.com/WillianaLeite/desafio-GreenMile/blob/master/result_teste.PNG)
 
 
 Observe que o quadrado está menor, pois esse é justamente o objetivo do último teste.
