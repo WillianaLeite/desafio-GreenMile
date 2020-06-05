@@ -166,6 +166,12 @@ Para o segundo teste as mesmas etapas são verificadas mas com as dimensões con
 
 ```
 
+Você deve obter esse resultado ao final de todos os testes. 
+
+
+
+Observe que o quadrado está menor, pois esse é justamente o objetivo do último teste.
+
 
 ## Construído com
 
