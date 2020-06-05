@@ -71,7 +71,6 @@ Após instalar o npm, clone este repositório:
 
 ```
 git clone https://github.com/WillianaLeite/desafio-GreenMile.git
-
 ```
 Ou se preferir faça o download em zip, e em seguida o extraia para o diretório de sua preferência.
 
