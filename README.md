@@ -1,90 +1,177 @@
 # Avaliando eventos de long click com Cypress
 
-Este repositório contém a implementação para o desafio proposto pela GreenMile. Originalmente o problema pede para que se avalie a aplicação disponível neste [link](https://codepen.io/choskim/pen/RLYebL). Esta aplicação possui uma implementação simples de um long click, inicialmente a página possui um quadrado verde e quando o usuário pressiona o botão esquerdo do mouse por no mínimo 500 milisegundos, o quadrado aumenta de tamanho. A validação utilizando o cypress é executada para avaliar se o quadrado realmente aumenta após o longo clique.
+Este repositório contém a implementação para o desafio proposto pela GreenMile. Originalmente o problema pede para que se avalie a aplicação disponível neste [link](https://codepen.io/choskim/pen/RLYebL). Esta aplicação possui uma implementação simples de um long click, inicialmente a página possui um quadrado verde e quando o usuário pressiona o botão esquerdo do mouse por no mínimo 500 milisegundos, o quadrado aumenta de tamanho. A validação utilizando o cypress é executada para avaliar se o quadrado realmente aumenta após o longo clique. O problema principal para realizar essa validação neste [código](https://codepen.io/choskim/pen/RLYebL), é que a aplicação utiliza a biblioteca hammer.js para lidar com os eventos de clique, o problema é que como mencionado nesta [questão](https://github.com/cypress-io/cypress/issues/4286) no repositório oficial do framework, o hammer.js identifica que a ação simulada de clique disparada pelo Cypress não é uma ação nativa e ignora o evento, dessa forma não tem como avaliar se o elemento alterou seu tamanho, visto que o evento de click não foi processado. Para solucionar isso proponho alterar o código-fonte e modificar o uso da biblioteca hammer.js por javascript puro, com a seguinte modificação:
 
+Utilizando hammer.js
+```
+var square = document.querySelector('.square');
 
-## Getting Started
+var manager = new Hammer.Manager(square);
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+var Press = new Hammer.Press({
+  time: 500
+});
 
-### Prerequisites
+manager.add(Press);
 
-What things you need to install the software and how to install them
+manager.on('press', function(e) {
+  e.target.classList.toggle('expand');
+});
 
 ```
-Give examples
+Utilizando apenas javascript:
 ```
+var square = document.querySelector('.square');
+
+var pressTimer = 500;
+
+square.addEventListener("mouseup", () => {
+    
+    clearTimeout(pressTimer);
+
+})
+
+square.addEventListener("mousedown", (e) => {
+
+    if(e.which == 1) {//Para garantir que só o longo clique do botão esquerdo será considerado, caso o direito também seja, acrescente no if: || e.which == 3
+    
+        pressTimer = window.setTimeout(() => {
+
+            e.target.classList.toggle('expand');
+        
+        },500);
+    
+    }
+
+})
+
+```
+
+
+## Começando
+
+As instruções fornecidas a seguir vão te ajudar a montar o ambiente necessário para que essa aplicação possa ser clonada/baixada e executada em sua máquina.
+
+
+### Pré requisitos
+
+Você precisa ter instalado o gerenciador de pacotes npm na sua máquina, para ajudar na instalação do cypress. Sua instalação pode ser executada seguindo o tutorial deste [link](https://phoenixnap.com/kb/install-node-js-npm-on-windows). 
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+Após instalar o npm, clone este repositório:
 
 ```
-Give the example
-```
-
-And repeat
+git clone https://github.com/WillianaLeite/desafio-GreenMile.git
 
 ```
-until finished
-```
+Ou faça o download em zip, em seguida extraia o arquivo para o diretório de sua preferência.
 
-End with an example of getting some data out of the system or using it for a little demo
 
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+Após obter o código completo, execute o seguinte código dentro da pasta do projeto:
 
 ```
-Give an example
+npm install
 ```
 
-### And coding style tests
+Este comando irá instalar todas as dependências necessárias para essa aplicação funcionar, inclusive instala automaticamente o framework Cypress também. 
 
-Explain what these tests test and why
+## Executando os testes
+
+Para executar os testes, execute o seguinte código para abrir o cypress:
 
 ```
-Give an example
+npm run cypress:open
 ```
 
-## Deployment
+Em seguida, execute o teste, clicando sobre o mesmo. Para modificar o arquivo de teste, observe que ele está localizado no diretório: cypress/integration/long_press_test.spec.js.
 
-Add additional notes about how to deploy this on a live system
 
-## Built With
+### Entendendo o arquivo de teste
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+Os dois testes desenvolvidos podem ser testados individualmente, isso ocorre devido ao reload() da página executado antes de cada teste na função beforeEach. 
 
-## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
-## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+```
+before(()=>{
 
-## Authors
+        //Executado apenas uma vez no início do grupo de teste atual, para evitar repetição de código.
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+        cy.visit('./src/index.html')
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+    })
 
-## License
+    beforeEach(()=>{
+        
+        //Este detalhe garante que os testes possam ser exercutados individualmente, tornando os testes independentes.
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+        cy.reload()
 
-## Acknowledgments
+    })
+    
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+```
 
+O primeiro teste verifica se as dimensões iniciais do objeto correspondem à 90px de largura por 90 píxels de altura, este é o tamanho padrão do objeto antes de qualquer evento, logo após a simulação do long click ocorre, e por fim a verificação novamente das dimensões do objeto, para analisar se ele realmente aumentou, essa verificação é feita através da assertiva que analisa se o novo tamanho do objeto corresponde à 225px de largura por 225px de altura. 
+
+
+```
+it('Assertiva: tamanho inicial do square: 90x90  -> long click -> tamanho deve aumentar.', () => {
+       
+        //Validando se o tamanho anterior era realmente de 90x90. 
+        cy.get('.square').should('have.css', 'width', '90px')
+        cy.get('.square').should('have.css', 'height', '90px')
+        
+        //Simulando o Long Click, esse objeto passado como 2º parâmetro no trigger com atributo which: 1 garante que a simulação do click ocorrerá com o botão esquerdo
+        cy.get('.square').trigger('mousedown',  { which: 1})
+        
+        //Pausa para tornar o teste visualmente mais agradável de acompanhar. Não interfere em nada no funcionamento, podendo ser excluído.
+        cy.wait(700)
+        
+        //Validando se o tamanho do square realmente aumentou, através da assertiva que verifica se o novo tamanho do square possui dimensão 225x225.
+        cy.get('.square').should('have.css', 'width', '225px')
+        cy.get('.square').should('have.css', 'height', '225px')
+
+    })
+    
+ ```
+Para o segundo teste as mesmas etapas são verificadas mas com as dimensões contrárias, dessa vez devemos observar se o objeto depois de expandido e após do long click retorna ao seu tamanho original de 90px de largura por 90px de altura. 
+
+```
+    it('Assertiva: tamanho inicial do square: 225x225  -> long click -> tamanho deve diminuir.', () => {
+        
+        //Aumentando o tamanho do square, , esse objeto passado como 2º parâmetro no trigger com atributo which: 1 garante que a simulação do click ocorrerá com o botão esquerdo
+        cy.get('.square').trigger('mousedown',  { which: 1})
+        
+
+        //Garantindo que o tamanho do square realmente aumentou.
+        cy.get('.square').should('have.css', 'width', '225px')
+        cy.get('.square').should('have.css', 'height', '225px')
+
+        
+        //Simulando o clique novamente, para analisar se o square irá diminuir, esse objeto passado como 2º parâmetro no trigger com atributo which: 1 garante que a simulação do click ocorrerá com o botão esquerdo 
+        cy.get('.square').trigger('mousedown',  { which: 1})
+
+        //Pausa para tornar o teste visualmente mais agradável de acompanhar. Não interfere em nada no funcionamento, podendo ser excluído.
+        cy.wait(700)
+        
+        //Validando se o tamanho do square realmente diminuiu, através da assertiva que verifica se o novo tamanho do square possui dimensão 90x90.
+        cy.get('.square').should('have.css', 'width', '90px')
+        cy.get('.square').should('have.css', 'height', '90px')
+
+    })   
+
+
+```
+
+
+## Construído com
+
+[Cypress](https://www.cypress.io/) - Framework de automação de testes
+
+## Autora
+
+* **Williana Leite** - *Initial work* - [PurpleBooth](https://github.com/WillianaLeite)
 
