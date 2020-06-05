@@ -64,6 +64,7 @@ As instruções fornecidas a seguir vão te ajudar a montar o ambiente necessár
 <p align="justify">
 Você precisa ter instalado o gerenciador de pacotes npm na sua máquina, para ajudar na instalação do cypress. Sua instalação pode ser executada seguindo o tutorial deste [link](https://phoenixnap.com/kb/install-node-js-npm-on-windows). 
 </p>
+
 ### Installing
 
 Após instalar o npm, clone este repositório:
@@ -83,6 +84,7 @@ npm install
 <p align="justify">
 Este comando irá instalar todas as dependências necessárias para essa aplicação funcionar, inclusive instala automaticamente o framework Cypress também. 
 </p>
+
 ## Executando os testes
 
 Para executar os testes, execute o seguinte código para abrir o cypress:
