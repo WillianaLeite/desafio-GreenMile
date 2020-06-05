@@ -3,7 +3,9 @@
 <p align="justify">
 Este repositório contém a implementação para o desafio proposto pela GreenMile. Originalmente o problema pede para que se avalie a aplicação disponível neste [link](https://codepen.io/choskim/pen/RLYebL). Esta aplicação possui uma implementação simples de um long click. Inicialmente a página possui um quadrado verde e quando o usuário pressiona o botão esquerdo do mouse por no mínimo 500 milisegundos, o quadrado aumenta de tamanho. A validação utilizando o cypress é executada para avaliar se o quadrado realmente aumenta após o longo clique. O problema principal para realizar essa validação neste [código](https://codepen.io/choskim/pen/RLYebL), é que a aplicação utiliza a biblioteca hammer.js para lidar com os eventos de clique, o problema é que como mencionado nesta [questão](https://github.com/cypress-io/cypress/issues/4286) do repositório oficial do cypress, o hammer.js que fica ouvindo o evento de click do botão, percebe que a ação simulada de clique do Cypress não é uma ação nativa e ignora o evento, dessa forma não tem como avaliar se o elemento alterou seu tamanho, visto que o evento de click não foi processado. Para solucionar esse problema proponho alterar o código fonte e modificar o uso da biblioteca hammer.js por apenas javascript, dado que para esta aplicação o uso da biblioteca hammer.js não é imprescindível, pondendo ser facilmente substituída. A modificação ocorre da seguinte maneira:
 </p>
-Antes utilizando hammer.js:
+
+<p>Antes utilizando hammer.js:</p>
+
 ```
 var square = document.querySelector('.square');
 
@@ -20,7 +22,9 @@ manager.on('press', function(e) {
 });
 
 ```
-Depos utilizando apenas javascript:
+
+Depois utilizando apenas javascript:
+
 ```
 var square = document.querySelector('.square');
 
@@ -145,6 +149,7 @@ it('Assertiva: tamanho inicial do square: 90x90  -> long click -> tamanho deve a
 <p align="justify">
 Para o segundo teste as mesmas etapas são verificadas mas com as dimensões contrárias, dessa vez devemos observar se o objeto depois de expandido e após do long click retorna ao seu tamanho original de 90px de largura por 90px de altura. 
 </p>
+
 ```
     it('Assertiva: tamanho inicial do square: 225x225  -> long click -> tamanho deve diminuir.', () => {
         
