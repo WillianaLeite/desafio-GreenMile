@@ -1,8 +1,8 @@
 # Avaliando eventos de long click com Cypress
 
-Este repositório contém a implementação para o desafio proposto pela GreenMile. Originalmente o problema pede para que se avalie a aplicação disponível neste [link](https://codepen.io/choskim/pen/RLYebL). Esta aplicação possui uma implementação simples de um long click, inicialmente a página possui um quadrado verde e quando o usuário pressiona o botão esquerdo do mouse por no mínimo 500 milisegundos, o quadrado aumenta de tamanho. A validação utilizando o cypress é executada para avaliar se o quadrado realmente aumenta após o longo clique. O problema principal para realizar essa validação neste [código](https://codepen.io/choskim/pen/RLYebL), é que a aplicação utiliza a biblioteca hammer.js para lidar com os eventos de clique, o problema é que como mencionado nesta [questão](https://github.com/cypress-io/cypress/issues/4286) no repositório oficial do framework, o hammer.js identifica que a ação simulada de clique disparada pelo Cypress não é uma ação nativa e ignora o evento, dessa forma não tem como avaliar se o elemento alterou seu tamanho, visto que o evento de click não foi processado. Para solucionar isso proponho alterar o código-fonte e modificar o uso da biblioteca hammer.js por javascript puro, com a seguinte modificação:
+Este repositório contém a implementação para o desafio proposto pela GreenMile. Originalmente o problema pede para que se avalie a aplicação disponível neste [link](https://codepen.io/choskim/pen/RLYebL). Esta aplicação possui uma implementação simples de um long click. Inicialmente a página possui um quadrado verde e quando o usuário pressiona o botão esquerdo do mouse por no mínimo 500 milisegundos, o quadrado aumenta de tamanho. A validação utilizando o cypress é executada para avaliar se o quadrado realmente aumenta após o longo clique. O problema principal para realizar essa validação neste [código](https://codepen.io/choskim/pen/RLYebL), é que a aplicação utiliza a biblioteca hammer.js para lidar com os eventos de clique, o problema é que como mencionado nesta [questão](https://github.com/cypress-io/cypress/issues/4286) do repositório oficial do cypress, o hammer.js que fica ouvindo o evento de click do botão, percebe que a ação simulada de clique do Cypress não é uma ação nativa e ignora o evento, dessa forma não tem como avaliar se o elemento alterou seu tamanho, visto que o evento de click não foi processado. Para solucionar esse problema proponho alterar o código fonte e modificar o uso da biblioteca hammer.js por apenas javascript, dado que para esta aplicação o uso da biblioteca hammer.js não é imprescindível, pondendo ser facilmente substituída. A modificação ocorre da seguinte maneira:
 
-Utilizando hammer.js
+Antes utilizando hammer.js:
 ```
 var square = document.querySelector('.square');
 
@@ -19,7 +19,7 @@ manager.on('press', function(e) {
 });
 
 ```
-Utilizando apenas javascript:
+Depos utilizando apenas javascript:
 ```
 var square = document.querySelector('.square');
 
@@ -50,7 +50,7 @@ square.addEventListener("mousedown", (e) => {
 
 ## Começando
 
-As instruções fornecidas a seguir vão te ajudar a montar o ambiente necessário para que essa aplicação possa ser clonada/baixada e executada em sua máquina.
+As instruções fornecidas a seguir vão te ajudar a montar o ambiente necessário para que essa aplicação seja clonada/baixada e executada em sua máquina.
 
 
 ### Pré requisitos
@@ -65,7 +65,7 @@ Após instalar o npm, clone este repositório:
 git clone https://github.com/WillianaLeite/desafio-GreenMile.git
 
 ```
-Ou faça o download em zip, em seguida extraia o arquivo para o diretório de sua preferência.
+Ou se preferir faça o download em zip, e em seguida o extraia para o diretório de sua preferência.
 
 
 Após obter o código completo, execute o seguinte código dentro da pasta do projeto:
@@ -114,7 +114,7 @@ before(()=>{
 
 ```
 
-O primeiro teste verifica se as dimensões iniciais do objeto correspondem à 90px de largura por 90 píxels de altura, este é o tamanho padrão do objeto antes de qualquer evento, logo após a simulação do long click ocorre, e por fim a verificação novamente das dimensões do objeto, para analisar se ele realmente aumentou, essa verificação é feita através da assertiva que analisa se o novo tamanho do objeto corresponde à 225px de largura por 225px de altura. 
+O primeiro teste verifica se as dimensões iniciais do objeto correspondem a 90px de largura por 90px de altura, este é o tamanho padrão do objeto antes de qualquer evento, logo após que a simulação do long click ocorre. Por fim outra verificação é feita nas dimensões do objeto, para analisar se ele realmente aumentou, essa verificação é realizada através da assertiva que analisa se o novo tamanho do objeto corresponde à 225px de largura por 225px de altura. 
 
 
 ```
@@ -173,5 +173,5 @@ Para o segundo teste as mesmas etapas são verificadas mas com as dimensões con
 
 ## Autora
 
-* **Williana Leite** - *Initial work* - [PurpleBooth](https://github.com/WillianaLeite)
+[**Williana Leite**](https://github.com/WillianaLeite)
 
